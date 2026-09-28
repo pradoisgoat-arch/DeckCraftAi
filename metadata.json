@@ -1,0 +1,6 @@
+{
+  "name": "DeckCraft AI - Intelligent Presentation Maker",
+  "description": "AI-powered presentation creator & editor. Generate stunning pitch decks, slides, and diagrams from topics or outlines, customize themes, and export to PPTX & PDF.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
