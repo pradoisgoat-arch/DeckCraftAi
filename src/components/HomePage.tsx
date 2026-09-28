@@ -20,6 +20,7 @@ import {
   CheckCircle2,
   Sliders,
   ExternalLink,
+  Loader2,
 } from 'lucide-react';
 
 interface Props {
@@ -51,6 +52,7 @@ export const HomePage: React.FC<Props> = ({
   const [slideCount, setSlideCount] = useState(6);
   const [selectedTone, setSelectedTone] = useState<AiTone>('Tech Startup');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [genError, setGenError] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<'all' | 'startup' | 'business' | 'tech'>('all');
 
   const handleStartQuickGen = async (e: React.FormEvent) => {
@@ -58,10 +60,12 @@ export const HomePage: React.FC<Props> = ({
     if (!quickTopic.trim() || isGenerating) return;
 
     setIsGenerating(true);
+    setGenError(null);
     try {
       await onQuickGenerate(quickTopic.trim(), slideCount, selectedTone);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Quick generation failed:', err);
+      setGenError(err?.message || 'Failed to generate presentation deck. Please try again.');
     } finally {
       setIsGenerating(false);
     }
@@ -110,12 +114,34 @@ export const HomePage: React.FC<Props> = ({
               <button
                 type="submit"
                 disabled={!quickTopic.trim() || isGenerating}
-                className="flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-indigo-600 hover:from-indigo-500 hover:to-indigo-400 disabled:opacity-50 text-white font-bold text-sm transition-all duration-200 shadow-lg shadow-indigo-600/30 hover:scale-[1.02] active:scale-95 whitespace-nowrap"
+                className="flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-indigo-600 hover:from-indigo-500 hover:to-indigo-400 disabled:opacity-50 text-white font-bold text-sm transition-all duration-200 shadow-lg shadow-indigo-600/30 hover:scale-[1.02] active:scale-95 whitespace-nowrap cursor-pointer"
               >
-                <Wand2 size={16} />
-                <span>{isGenerating ? 'Generating...' : 'Generate with AI'}</span>
+                {isGenerating ? (
+                  <>
+                    <Loader2 size={16} className="animate-spin text-indigo-200" />
+                    <span>Generating Deck...</span>
+                  </>
+                ) : (
+                  <>
+                    <Wand2 size={16} />
+                    <span>Generate with AI</span>
+                  </>
+                )}
               </button>
             </form>
+
+            {genError && (
+              <div className="mt-3 mx-1 p-3 rounded-xl bg-red-950/70 border border-red-800/80 text-red-200 text-xs flex items-center justify-between shadow-lg">
+                <span className="font-medium">{genError}</span>
+                <button
+                  type="button"
+                  onClick={() => setGenError(null)}
+                  className="text-red-400 hover:text-white text-xs underline ml-3 cursor-pointer"
+                >
+                  Dismiss
+                </button>
+              </div>
+            )}
 
             {/* Quick Prompt Options / Parameters */}
             <div className="flex flex-wrap items-center justify-between gap-3 mt-3 pt-3 border-t border-slate-800/80 px-2 text-xs">

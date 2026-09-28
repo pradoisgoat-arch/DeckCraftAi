@@ -250,7 +250,10 @@ export default function App() {
       body: JSON.stringify({ topic, slideCount: count, tone }),
     });
 
-    if (!res.ok) throw new Error('Failed to generate deck');
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(errData.error || 'Failed to generate presentation deck');
+    }
     const data = await res.json();
     handleDeckGenerated(data);
   };
